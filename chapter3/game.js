@@ -393,14 +393,14 @@ function initModalGemini(cipherNum) {
   if (solveBtn)   solveBtn.style.display   = 'none';
   // Show key overlay if no API key
   const overlay = document.getElementById(`${prefix}-gem-key-overlay`);
-  if (overlay) overlay.style.display = localStorage.getItem('gemini_api_key') ? 'none' : 'flex';
+  if (overlay) overlay.style.display = localStorage.getItem('google_api_key') ? 'none' : 'flex';
 }
 
 function saveModalGeminiKey(prefix) {
   const inp = document.getElementById(`${prefix}-gem-key-inp`);
   const val = inp ? inp.value.trim() : '';
   if (val) {
-    localStorage.setItem('gemini_api_key', val);
+    localStorage.setItem('google_api_key', val);
     const overlay = document.getElementById(`${prefix}-gem-key-overlay`);
     if (overlay) overlay.style.display = 'none';
   }
@@ -421,7 +421,7 @@ async function requestModalGeminiHint() {
   const n    = currentModalCipher;
   const data = MODAL_CIPHER_DATA[n];
   if (!data) return;
-  const key    = localStorage.getItem('gemini_api_key');
+  const key    = localStorage.getItem('google_api_key');
   const prefix = n === 1 ? 'cm' : 'zz';
 
   if (!key) return; // overlay is blocking the button — safety guard only
@@ -477,7 +477,7 @@ const MODAL_EXAMPLE_PROMPT = {
 
 async function requestModalGeminiExample() {
   const n      = currentModalCipher;
-  const key    = localStorage.getItem('gemini_api_key');
+  const key    = localStorage.getItem('google_api_key');
   const prefix = n === 1 ? 'cm' : 'zz';
   if (!key) return;
 
@@ -660,7 +660,7 @@ function addMessage(text, role) {
 }
 
 function initGeminiPanel() {
-  const key     = localStorage.getItem('gemini_api_key');
+  const key     = localStorage.getItem('google_api_key');
   const overlay = document.getElementById('gem-key-overlay');
   if (overlay) overlay.style.display = key ? 'none' : 'flex';
   document.getElementById('gem-hint-btn').style.display    = 'inline-block';
@@ -671,7 +671,7 @@ function initGeminiPanel() {
 function saveGeminiKey() {
   const val = document.getElementById('gem-key-inp').value.trim();
   if (val) {
-    localStorage.setItem('gemini_api_key', val);
+    localStorage.setItem('google_api_key', val);
     document.getElementById('gem-key-overlay').style.display = 'none';
   }
 }
@@ -681,7 +681,7 @@ function useBuiltinHints() {
 }
 
 async function requestGeminiHint() {
-  const key = localStorage.getItem('gemini_api_key');
+  const key = localStorage.getItem('google_api_key');
   if (!key) return; // overlay blocks the button — safety guard only
   const act = ACTS[currentAct];
   if (!act) return;
@@ -699,7 +699,7 @@ async function requestGeminiHint() {
 }
 
 async function requestGeminiExample() {
-  const key = localStorage.getItem('gemini_api_key');
+  const key = localStorage.getItem('google_api_key');
   if (!key) return;
 
   const typing = document.createElement('div');
@@ -742,7 +742,7 @@ async function requestGeminiSolve() {
 }
 
 async function callGeminiAPI(userMsg, fallback = null) {
-  const key = localStorage.getItem('gemini_api_key');
+  const key = localStorage.getItem('google_api_key');
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,

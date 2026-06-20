@@ -89,7 +89,7 @@
   <p class="game-sub">June 19, 1865 — The day freedom arrived by sea</p>
   <div class="divider"></div>
 
-  <span class="key-label">GEMINI AI KEY <em>(optional — powers in-game hints)</em></span>
+  <span class="key-label">GOOGLE API KEY <em>(optional — powers in-game hints)</em></span>
   <div class="key-row">
     <input type="password" id="apiKey" class="key-inp" placeholder="AIza…" autocomplete="off"/>
     <button class="key-save" onclick="saveKey()">Save</button>
@@ -100,7 +100,7 @@
   <span class="skip-link" onclick="begin()">Continue without API key</span>
 
   <div class="footer">
-    <a href="https://github.com/yourusername/juneteenth-1865" target="_blank">⭐ Star on GitHub</a>
+    <a href="https://github.com/NitinPSingh/JUNETEENTH" target="_blank">⭐ Star on GitHub</a>
   </div>
 </div>
 
@@ -140,25 +140,25 @@
 /* ── API Key ─────────────────────────────────────────────────────────── */
 const inp    = document.getElementById('apiKey');
 const status = document.getElementById('keyStatus');
-const saved  = localStorage.getItem('gemini_api_key');
+const saved  = localStorage.getItem('google_api_key');
 if (saved) { inp.value = '(saved)'; status.textContent = '✓ API key loaded'; }
 
 function saveKey() {
   const v = inp.value.trim();
   if (v && v !== '(saved)') {
-    localStorage.setItem('gemini_api_key', v);
+    localStorage.setItem('google_api_key', v);
     status.textContent = '✓ Key saved';
   }
 }
 inp.addEventListener('input', () => {
   const v = inp.value.trim();
-  if (v) localStorage.setItem('gemini_api_key', v);
+  if (v) localStorage.setItem('google_api_key', v);
 });
 inp.addEventListener('keydown', e => { if (e.key === 'Enter') begin(); });
 
 function begin() {
   const v = inp.value.trim();
-  if (v && v !== '(saved)') localStorage.setItem('gemini_api_key', v);
+  if (v && v !== '(saved)') localStorage.setItem('google_api_key', v);
   window.location.href = 'chapter1/index.html';
 }
 </script>
