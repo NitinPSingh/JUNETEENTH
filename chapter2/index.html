@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 2: The Announcement — Galveston 1865</title>
+  <style>
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ background:#0a0a0a; font-family:Georgia,serif; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; }
+
+    .scene{ display:none; flex-direction:column; align-items:center; justify-content:center; width:100%; }
+    .scene.active{ display:flex; }
+
+    @keyframes blink-prompt{ 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+    /* ── INTRO ── */
+    #s-intro{ width:100vw; height:100vh; position:relative; overflow:hidden; }
+    #s-intro .ch-bg{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; display:block; background:#04080f;
+    }
+    #s-intro .ch-grad{
+      position:absolute; inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.18) 50%,rgba(0,0,0,0.55) 100%);
+    }
+    #s-intro .intro-inner{
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    }
+    #s-intro .ch-date{ font-size:0.62rem; letter-spacing:6px; color:#c8860a; }
+    #s-intro .ch-sep{ width:80px; height:1px; background:#c8860a; opacity:0.5; }
+    #s-intro .ch-label{ font-size:0.62rem; letter-spacing:4px; color:#aaa; }
+    #s-intro .intro-box{
+      background:rgba(6,13,31,0.72); border:1px solid rgba(200,134,10,0.4);
+      border-radius:14px; padding:28px 40px;
+      display:flex; flex-direction:column; align-items:center; gap:14px;
+      backdrop-filter:blur(4px);
+    }
+    #s-intro h1{ font-size:2.1rem; letter-spacing:2px; color:#f0d890; font-weight:normal; }
+    #s-intro button{
+      margin-top:22px; padding:11px 36px; background:#c8860a; border:none; border-radius:6px;
+      color:#fff; font-size:0.9rem; cursor:pointer; letter-spacing:2px; font-family:Georgia,serif;
+    }
+    #s-intro button:hover{ background:#e09a10; }
+
+    /* ── CURTAIN ── */
+    #s-curtain{ gap:10px; }
+    #stage{
+      position:relative; width:680px; height:520px;
+      background:#1a0d05; overflow:hidden; border:2px solid #3a2010;
+    }
+    #proclamation{
+      position:absolute; inset:0; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; padding:40px 60px;
+      gap:12px; z-index:1;
+    }
+    #proclamation .seal{ font-size:2.5rem; margin-bottom:4px; }
+    #proclamation .order-num{ font-size:0.72rem; letter-spacing:3px; color:#c8a060; }
+    #proclamation h2{ font-size:1.1rem; color:#f0d890; letter-spacing:1px; }
+    #proclamation .divider{ width:80%; height:1px; background:#5a3a10; }
+    #proclamation p{ font-size:0.82rem; line-height:1.75; color:#d4c090; text-align:center; }
+    #proclamation .signature{ margin-top:8px; font-size:0.75rem; color:#c8a060; letter-spacing:1px; }
+
+    /* Curtain overlay */
+    #curtain-overlay{
+      position:absolute; top:0; left:0; right:0; height:100%;
+      z-index:2; pointer-events:none;
+    }
+    #curtain-cloth{
+      position:absolute; top:0; left:0; right:60px; height:100%;
+      background: linear-gradient(180deg,#6b0808 0%,#8b0000 30%,#7a0000 70%,#4a0000 100%);
+      transform-origin:top;
+    }
+    /* Curtain folds */
+    #curtain-cloth::after{
+      content:'';
+      position:absolute; inset:0;
+      background: repeating-linear-gradient(90deg,
+        rgba(0,0,0,0.18) 0px, rgba(255,255,255,0.04) 18px,
+        rgba(0,0,0,0.18) 36px, rgba(255,255,255,0.04) 54px,
+        rgba(0,0,0,0.18) 72px
+      );
+    }
+    /* Curtain bottom wavy edge */
+    #curtain-wave{
+      position:absolute; bottom:-12px; left:0; right:60px; height:24px;
+      background:#6b0808; z-index:3;
+      clip-path: polygon(0% 0%, 6.25% 100%, 12.5% 0%, 18.75% 100%, 25% 0%, 31.25% 100%, 37.5% 0%, 43.75% 100%, 50% 0%, 56.25% 100%, 62.5% 0%, 68.75% 100%, 75% 0%, 81.25% 100%, 87.5% 0%, 93.75% 100%, 100% 0%);
+    }
+
+    /* Rope */
+    #rope-wrap{
+      position:absolute; top:0; right:0; width:60px; height:100%;
+      z-index:4; display:flex; flex-direction:column; align-items:center;
+      background:#1a0d05;
+    }
+    #rope-line{
+      width:4px; background:repeating-linear-gradient(180deg,#c8a050 0px,#a07830 8px,#c8a050 16px);
+      flex:1; border-radius:2px;
+    }
+    #rope-handle{
+      width:32px; height:32px; background:#c8a050; border-radius:50%;
+      border:3px solid #806020; cursor:grab; position:absolute;
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; color:#3a2000; font-weight:bold; user-select:none;
+      box-shadow:0 2px 8px rgba(0,0,0,0.5);
+    }
+    #rope-handle:active{ cursor:grabbing; }
+    .curtain-hint{
+      font-size:0.78rem; color:#664422; letter-spacing:1px;
+      text-align:center; margin-top:6px;
+    }
+
+    /* ── DIALOGUE ── */
+    #dialogue{
+      display:none; position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+      width:600px; background:rgba(6,13,31,0.97); border-top:2px solid #c8860a;
+      padding:14px 16px; flex-direction:column; gap:8px; z-index:100;
+    }
+    #dlg-single .spk{ color:#c8860a; font-size:0.72rem; letter-spacing:1px; margin-bottom:3px; }
+    #dlg-single .txt{ font-size:0.88rem; line-height:1.55; color:#eee; }
+    #dlg-dual{ display:none; align-items:center; gap:12px; }
+    .dlg-char{ display:flex; flex-direction:column; align-items:center; gap:3px; transition:opacity .2s; flex-shrink:0; }
+    .dlg-char img{ width:58px; height:58px; border-radius:50%; object-fit:cover; border:2px solid #c8860a; background:#1a2030; }
+    .dlg-char .cname{ font-size:0.6rem; color:#c8860a; letter-spacing:1px; text-align:center; max-width:70px; }
+    #dlg-dual-txt{ flex:1; font-size:0.88rem; line-height:1.6; color:#eee; }
+    .dlg-hint-bar{ font-size:0.65rem; color:#445; text-align:right; }
+
+    /* ── PUZZLE ── */
+    #s-puzzle{ padding:20px; gap:14px; }
+    #puzzle-header{ text-align:center; }
+    #puzzle-header .ch-tag{ font-size:0.7rem; letter-spacing:3px; color:#c8860a; }
+    #puzzle-header h2{ font-size:1.2rem; color:#f0d890; margin-top:2px; }
+    #puzzle-header .subtext{ font-size:0.78rem; color:#888; margin-top:3px; }
+
+    #puzzle-body{ display:flex; gap:20px; align-items:flex-start; }
+
+    /* Grid */
+    #grid{
+      display:grid; grid-template-columns:repeat(8,58px);
+      grid-template-rows:repeat(8,58px); gap:2px;
+      border:2px solid #333; background:#111;
+    }
+    .cell{
+      width:58px; height:58px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.5rem; position:relative; transition:filter .15s;
+    }
+    .cell:hover{ filter:brightness(1.25); }
+    .cell.has-bell{ filter:brightness(1.1); }
+    .cell.cross-bell{ animation: shake-no .35s ease; }
+    @keyframes shake-no{
+      0%,100%{ transform:translateX(0); }
+      20%{ transform:translateX(-5px); }
+      60%{ transform:translateX(5px); }
+    }
+    .cell.region-disabled{
+      opacity:0.38; cursor:not-allowed; filter:saturate(0.4);
+    }
+
+    /* Rules panel */
+    #rules-panel{
+      width:200px; background:#111; border:1px solid #2a2a2a; border-radius:6px;
+      padding:12px; font-size:0.72rem; color:#aaa; line-height:1.7;
+    }
+    #rules-panel h3{ color:#c8860a; font-size:0.75rem; letter-spacing:1px; margin-bottom:8px; }
+    #rules-panel .rule{ margin-bottom:5px; color:#ccc; }
+    #rules-panel .rule span{ color:#f0c060; font-weight:bold; }
+
+    /* Progress panel */
+    #progress-panel{
+      width:100%; max-width:418px; background:#111; border:1px solid #2a2a2a;
+      border-radius:6px; padding:12px 16px; font-size:0.82rem;
+    }
+    #progress-bar-wrap{
+      height:8px; background:#222; border-radius:4px; margin:8px 0;
+      overflow:hidden;
+    }
+    #progress-bar{ height:100%; background:#c8860a; border-radius:4px; transition:width .3s; }
+    #progress-text{ color:#ccc; }
+    #progress-text.error{ color:#e05050; font-weight:bold; }
+    #progress-text.win{ color:#4caf50; font-weight:bold; }
+
+    #btn-reset{
+      padding:8px 24px; background:#1a1a1a; border:1px solid #444; border-radius:5px;
+      color:#aaa; font-size:0.82rem; cursor:pointer; font-family:Georgia,serif;
+      letter-spacing:1px;
+    }
+    #btn-reset:hover{ background:#2a2a2a; color:#fff; }
+
+    #btn-continue{
+      display:none; padding:10px 32px; background:#c8860a; border:none; border-radius:6px;
+      color:#fff; font-size:0.9rem; cursor:pointer; font-family:Georgia,serif;
+      letter-spacing:1px; animation: fadeIn .4s ease;
+    }
+    #btn-continue:hover{ background:#e09a10; }
+    @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+    .puzzle-actions{ display:flex; gap:12px; align-items:center; }
+
+    /* ── WIN ── */
+    #s-win{
+      text-align:center; gap:16px; padding:40px;
+    }
+    #s-win .trophy{ font-size:3.5rem; }
+    #s-win h2{ font-size:1.6rem; color:#f0c060; }
+    #s-win p{ color:#aaa; font-size:0.9rem; max-width:360px; line-height:1.6; }
+    #s-win a{
+      display:inline-block; margin-top:12px; padding:10px 30px;
+      background:#c8860a; border-radius:6px; color:#fff; text-decoration:none;
+      font-size:0.9rem; letter-spacing:1px;
+    }
+
+    /* skip button */
+    #btn-skip {
+      position:fixed; top:12px; right:12px; z-index:500;
+      padding:5px 14px; background:rgba(0,0,0,0.55); border:1px solid #334;
+      border-radius:4px; color:#666; font-size:0.7rem; cursor:pointer;
+      font-family:Georgia,serif; letter-spacing:1px;
+    }
+    #btn-skip:hover { color:#aaa; border-color:#556; }
+  </style>
+</head>
+<body>
+
+<button id="btn-skip" onclick="window.location.href='../chapter3/index.html'">Skip Chapter ›</button>
+
+<!-- INTRO -->
+<div id="s-intro" class="scene active">
+  <img class="ch-bg" src="./ch2-intro.png" alt="" onerror="this.style.background='#04080f'"/>
+  <div class="ch-grad"></div>
+  <div class="intro-inner">
+    <div class="intro-box">
+      <span class="ch-date">JUNE 19, 1865</span>
+      <div class="ch-sep"></div>
+      <span class="ch-label">CHAPTER TWO</span>
+      <h1>A Voice Across the Regions</h1>
+      <button onclick="goTo('curtain')">Continue &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- CURTAIN REVEAL -->
+<div id="s-curtain" class="scene">
+  <div id="stage">
+    <!-- Proclamation text (hidden behind curtain) -->
+    <div id="proclamation">
+      <div class="seal">⚖️</div>
+      <div class="order-num">GENERAL ORDER No. 3</div>
+      <h2>Headquarters District of Texas</h2>
+      <div class="divider"></div>
+      <p>The people of Texas are hereby informed that,<br/>
+      in accordance with a proclamation from the<br/>
+      Executive of the United States,<br/><br/>
+      <strong style="color:#f0d890;font-size:1rem;">ALL ENSLAVED PERSONS ARE FREE.</strong><br/><br/>
+      This freedom carries absolute equality of rights<br/>
+      before God and law. Go forth — let every soul<br/>
+      in every district of this great city hear<br/>
+      this proclamation.<br/><br/>
+      <em>Let freedom ring from every corner of Galveston.</em></p>
+      <div class="divider"></div>
+      <div class="signature">By order of Major General Gordon Granger</div>
+    </div>
+
+    <!-- Curtain overlay -->
+    <div id="curtain-overlay">
+      <div id="curtain-cloth"></div>
+      <div id="curtain-wave"></div>
+    </div>
+
+    <!-- Rope -->
+    <div id="rope-wrap">
+      <div id="rope-line"></div>
+      <div id="rope-handle">↓</div>
+    </div>
+  </div>
+  <p class="curtain-hint">Hold &amp; drag the rope <strong>↓</strong> to reveal the proclamation</p>
+</div>
+
+<!-- PUZZLE -->
+<div id="s-puzzle" class="scene">
+  <div id="puzzle-header">
+    <div class="ch-tag">CHAPTER 2 — MISSION</div>
+    <h2>Ring the Freedom Bells</h2>
+    <div class="subtext">Place bells across Galveston's 8 districts to spread the proclamation</div>
+  </div>
+  <div id="puzzle-body">
+    <div id="grid"><!-- built by JS --></div>
+    <div id="rules-panel">
+      <h3>📜 BELL RULES</h3>
+      <div class="rule"><span>1.</span> One bell per row (street)</div>
+      <div class="rule"><span>2.</span> One bell per column (lane)</div>
+      <div class="rule"><span>3.</span> One bell per colored district</div>
+      <div class="rule"><span>4.</span> No two bells can touch — even diagonally</div>
+      <hr style="border-color:#222;margin:10px 0"/>
+      <div class="rule">🎯 <span>Goal:</span> Cover 6 of 8 districts (75%)</div>
+      <div class="rule">Click a 🔔 again to remove it</div>
+    </div>
+  </div>
+  <div id="progress-panel">
+    <div id="progress-text">Place freedom bells to begin...</div>
+    <div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
+  </div>
+  <div class="puzzle-actions">
+    <button id="btn-reset" onclick="resetPuzzle()">Reset Board</button>
+    <button id="btn-continue" onclick="window.location.href='../chapter3/index.html'">Continue to Chapter 3 ›</button>
+  </div>
+</div>
+
+<!-- WIN -->
+<div id="s-win" class="scene">
+  <div class="trophy">🔔</div>
+  <h2>The Word Has Spread!</h2>
+  <p>Six districts of Galveston now ring with the sound of freedom.<br/>
+  The proclamation has reached every corner of the city.</p>
+  <a href="../chapter3/index.html">Continue to Chapter 3 →</a>
+</div>
+
+<!-- DIALOGUE OVERLAY -->
+<div id="dialogue">
+  <div id="dlg-single">
+    <div class="spk" id="dlg-spk"></div>
+    <div class="txt" id="dlg-txt"></div>
+  </div>
+  <div id="dlg-dual">
+    <div class="dlg-char" id="dlg-c1">
+      <img id="dlg-img1" src="persons/person1.png" alt="" onerror="this.style.background='#2a3a4a'"/>
+      <span class="cname">REV. ELIJAH<br/>FREEMAN</span>
+    </div>
+    <div id="dlg-dual-txt"></div>
+    <div class="dlg-char" id="dlg-c2">
+      <img id="dlg-img2" src="persons/person2.png" alt="" onerror="this.style.background='#2a3a4a'"/>
+      <span class="cname">CLARA<br/>WASHINGTON</span>
+    </div>
+  </div>
+  <div class="dlg-hint-bar">SPACE to continue</div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

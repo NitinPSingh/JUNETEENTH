@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 1: The Voyage — Galveston 1865</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#060d1f; display:flex; align-items:center; justify-content:center; height:100vh; font-family:Georgia,serif; color:#fff; }
+
+    #gameWrapper { position:relative; }
+
+    /* skip button */
+    #btn-skip {
+      position:fixed; top:12px; right:12px; z-index:500;
+      padding:5px 14px; background:rgba(0,0,0,0.55); border:1px solid #334;
+      border-radius:4px; color:#666; font-size:0.7rem; cursor:pointer;
+      font-family:Georgia,serif; letter-spacing:1px;
+    }
+    #btn-skip:hover { color:#aaa; border-color:#556; }
+
+    /* Dialogue */
+    #dialogue {
+      position:absolute; bottom:0; left:0; right:0;
+      background:rgba(6,13,31,0.96); border-top:2px solid #c8860a;
+      padding:12px 16px; display:none; flex-direction:column; gap:8px; z-index:50;
+    }
+    #dlgSingle .speaker { color:#c8860a; font-size:0.75rem; letter-spacing:1px; margin-bottom:3px; }
+    #dlgSingle .text    { font-size:0.9rem; line-height:1.5; color:#eee; }
+    #dlgDual { display:none; align-items:flex-end; gap:12px; }
+    .dlg-person { display:flex; flex-direction:column; align-items:center; gap:4px; transition:opacity .2s; }
+    .dlg-person img { width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #c8860a; background:#1a2a3a; }
+    .dlg-person .pname { font-size:0.65rem; color:#c8860a; letter-spacing:1px; }
+    #dlgDualText { flex:1; font-size:0.9rem; line-height:1.55; color:#eee; align-self:center; }
+    .dlg-hint { font-size:0.68rem; color:#445; text-align:right; }
+  @keyframes blink-prompt{0%,100%{opacity:1;}50%{opacity:0;}}
+  </style>
+</head>
+<body>
+
+<!-- ── Chapter 1 Intro Overlay ── -->
+<div id="ch1-intro" onclick="dismissChIntro()"
+  style="position:fixed;inset:0;z-index:999;cursor:pointer;overflow:hidden;transition:opacity 0.7s;">
+  <img src="./ch1-intro.png" alt=""
+    style="width:100%;height:100%;object-fit:cover;display:block;"
+    onerror="this.style.background='#050a18'"/>
+  <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.2) 50%,rgba(0,0,0,0.55) 100%);"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;">
+    <div style="background:rgba(6,13,31,0.72);border:1px solid rgba(200,134,10,0.4);border-radius:14px;padding:28px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;backdrop-filter:blur(4px);">
+      <div style="font-size:0.62rem;letter-spacing:6px;color:#c8860a;">JUNE 18, 1865</div>
+      <div style="width:80px;height:1px;background:#c8860a;opacity:0.5;"></div>
+      <div style="font-size:0.62rem;letter-spacing:4px;color:#aaa;">CHAPTER ONE</div>
+      <div style="font-size:2.4rem;color:#f0d890;letter-spacing:3px;font-family:Georgia,serif;font-weight:normal;">The Galveston Tide</div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:36px;left:0;right:0;text-align:center;font-size:0.6rem;letter-spacing:3px;color:#444;animation:blink-prompt 1.6s step-end infinite;">CLICK ANYWHERE TO CONTINUE</div>
+</div>
+<script>
+function dismissChIntro(){
+  const el=document.getElementById('ch1-intro');
+  el.style.opacity='0';
+  setTimeout(()=>el.remove(),700);
+}
+document.addEventListener('keydown',()=>{
+  if(document.getElementById('ch1-intro'))dismissChIntro();
+},{once:true});
+</script>
+
+<div id="gameWrapper">
+  <canvas id="canvas" width="600" height="700"></canvas>
+
+  <button id="btn-skip" onclick="skipChapter()">Skip Chapter &rsaquo;</button>
+
+  <div id="dialogue">
+    <div id="dlgSingle">
+      <div class="speaker" id="dlgSpeaker"></div>
+      <div class="text"    id="dlgSingleText"></div>
+    </div>
+    <div id="dlgDual">
+      <div class="dlg-person" id="dlgP1Wrap">
+        <img id="dlgP1Img" src="" alt=""/>
+        <span class="pname">GEN. GRANGER</span>
+      </div>
+      <div id="dlgDualText"></div>
+      <div class="dlg-person" id="dlgP2Wrap">
+        <img id="dlgP2Img" src="" alt=""/>
+        <span class="pname">CAPTAIN</span>
+      </div>
+    </div>
+    <div class="dlg-hint">SPACE to continue</div>
+  </div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>

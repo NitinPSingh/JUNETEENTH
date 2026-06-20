@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 3: The Reunion — Galveston 1865</title>
+  <style>
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ background:#080604; font-family:Georgia,serif; color:#e8d8b0;
+          display:flex; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; }
+
+    .screen{ display:none; }
+    .screen.active{ display:flex; }
+
+    #btn-skip{
+      position:fixed; top:12px; right:12px; z-index:999;
+      padding:5px 14px; background:rgba(0,0,0,0.6); border:1px solid #2a2010;
+      border-radius:4px; color:#444; font-size:0.7rem; cursor:pointer; font-family:Georgia,serif;
+      letter-spacing:1px;
+    }
+    #btn-skip:hover{ color:#888; }
+
+    /* ═══════════════════════════════
+       TYPING SCREEN
+    ═══════════════════════════════ */
+    #s-typing{
+      flex-direction:column; align-items:center; justify-content:center;
+      width:100vw; height:100vh; background:#080604;
+    }
+    .typing-eyebrow{ font-size:0.65rem; letter-spacing:5px; color:#3a2e18; margin-bottom:20px; }
+    #typing-text{ font-size:2.8rem; color:#f0d890; letter-spacing:6px; }
+    .cursor{ font-size:2.8rem; color:#c8860a; animation:blink 0.8s step-end infinite; }
+    @keyframes blink{ 0%,100%{ opacity:1; } 50%{ opacity:0; } }
+    .typing-skip{ margin-top:40px; font-size:0.7rem; color:#2a2010; cursor:pointer; letter-spacing:2px; }
+    .typing-skip:hover{ color:#664422; }
+
+    /* ═══════════════════════════════
+       SCENE SCREENS  (image + fixed dialogue)
+    ═══════════════════════════════ */
+    #s-scene, #s-scene2{
+      flex-direction:column; align-items:center; justify-content:flex-start;
+      width:680px; height:100vh; position:relative; background:#080604;
+    }
+    .scene-img-wrap{
+      width:100%; flex:1; position:relative; overflow:hidden;
+    }
+    .scene-img-wrap img{
+      width:100%; height:100%; object-fit:contain; object-position:center center; display:block;
+    }
+    .scene-grad-b{ position:absolute;inset:0;background:linear-gradient(to top,rgba(8,6,4,0.98) 0%,transparent 55%); }
+    .scene-grad-t{ position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,6,4,0.65) 0%,transparent 30%); }
+    .scene-hdg{
+      position:absolute; top:22px; left:0; right:0; text-align:center; z-index:2;
+      font-size:0.68rem; letter-spacing:5px; color:#c8860a;
+      text-shadow:0 2px 8px rgba(0,0,0,0.8);
+    }
+
+    /* DIALOGUE — fixed overlay shared by all scenes */
+    #dialogue{
+      position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+      width:680px; z-index:300;
+      background:rgba(6,4,2,0.97); border-top:2px solid #c8860a;
+      padding:14px 18px; display:none; flex-direction:column; gap:8px;
+    }
+    #dlg-single .spk{ color:#c8860a; font-size:0.7rem; letter-spacing:1px; margin-bottom:3px; }
+    #dlg-single .txt{ font-size:0.88rem; line-height:1.6; color:#e0d0a0; }
+    #dlg-dual{ display:none; align-items:center; gap:12px; }
+    .dlg-char{ display:flex; flex-direction:column; align-items:center; gap:3px; transition:opacity .2s; flex-shrink:0; }
+    .dlg-char img{ width:54px; height:54px; border-radius:50%; object-fit:cover; border:2px solid #c8860a; background:#2a1a0a; }
+    .dlg-char .cname{ font-size:0.6rem; color:#c8860a; text-align:center; max-width:70px; letter-spacing:1px; }
+    #dlg-dual-txt{ flex:1; font-size:0.88rem; line-height:1.65; color:#e0d0a0; }
+    .dlg-hint{ font-size:0.65rem; color:#332816; text-align:right; }
+
+    /* ═══════════════════════════════
+       LETTER SCREEN (flip card)
+    ═══════════════════════════════ */
+    #s-letter{
+      flex-direction:column; align-items:center; justify-content:center;
+      width:100vw; height:100vh; background:#0d0a06;
+      perspective:1400px;
+    }
+    .letter-card-wrap{
+      width:560px; height:680px; position:relative;
+      transform-style:preserve-3d;
+    }
+    #letter-inner{
+      width:100%; height:100%; position:relative;
+      transform-style:preserve-3d;
+      transition:transform 0.9s cubic-bezier(0.4,0,0.2,1);
+    }
+    #letter-inner.flipped{ transform:rotateY(180deg); }
+
+    .letter-side{
+      position:absolute; inset:0; backface-visibility:hidden;
+      background:#f5ecd4;
+      background-image:
+        radial-gradient(ellipse at 15% 20%, rgba(180,140,60,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 80%, rgba(160,120,40,0.1) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      box-shadow:3px 4px 18px rgba(0,0,0,0.55), -1px -1px 0 rgba(0,0,0,0.12);
+      border-radius:2px;
+      padding:38px 44px 28px;
+      display:flex; flex-direction:column; gap:0; overflow:hidden;
+      color:#2a1a08;
+    }
+    .letter-back{ transform:rotateY(180deg); }
+
+    .letter-date{ font-size:0.72rem; color:#8b6020; text-align:right; margin-bottom:16px; letter-spacing:1px; }
+    .letter-salutation{ font-size:1.05rem; color:#2a1a08; margin-bottom:14px; font-style:italic; }
+    .letter-body{ flex:1; font-size:0.82rem; line-height:1.9; color:#2a1a08; overflow:hidden; }
+    .letter-body p{ margin-bottom:10px; }
+    .letter-body p.indent{ text-indent:1.5em; }
+    .letter-sig{ margin-top:18px; font-style:italic; font-size:0.88rem; color:#5a3010; }
+    .letter-line{ width:100%; height:1px; background:rgba(100,70,20,0.18); margin:12px 0; }
+    .letter-btn{
+      margin-top:14px; padding:9px 24px; background:transparent;
+      border:1px solid #8b6020; border-radius:3px; color:#8b6020;
+      font-size:0.78rem; cursor:pointer; font-family:Georgia,serif;
+      letter-spacing:1px; align-self:flex-end;
+    }
+    .letter-btn:hover{ background:#8b6020; color:#f5ecd4; }
+
+    /* Letter back */
+    .back-top-line{ font-size:0.65rem; letter-spacing:3px; color:#8b6020; margin-bottom:16px; border-bottom:1px solid rgba(100,70,20,0.25); padding-bottom:10px; }
+    .back-note{ font-size:0.8rem; color:#4a2e10; line-height:1.7; margin-bottom:20px; font-style:italic; }
+    .cipher-box{
+      background:rgba(100,70,20,0.08); border:1px solid rgba(100,70,20,0.25);
+      border-radius:3px; padding:20px 24px; margin-bottom:8px;
+    }
+    .cipher-encoded{
+      font-size:1.8rem; letter-spacing:8px; color:#2a1a08;
+      font-weight:bold; text-align:center; margin-bottom:10px;
+    }
+    .cipher-name-label{
+      text-align:center; font-size:0.68rem; letter-spacing:3px; color:#8b6020;
+      border-top:1px solid rgba(100,70,20,0.2); padding-top:10px; margin-top:10px;
+    }
+    .back-instructions{ font-size:0.75rem; color:#6a4020; line-height:1.65; margin:10px 0 18px; }
+    .solve-btn{
+      padding:11px 30px; background:#8b4010; border:none; border-radius:3px;
+      color:#f5ecd4; font-size:0.85rem; cursor:pointer; font-family:Georgia,serif;
+      letter-spacing:2px; align-self:center;
+    }
+    .solve-btn:hover{ background:#aa5018; }
+
+    /* ═══════════════════════════════
+       LETTER 2 (compact note)
+    ═══════════════════════════════ */
+    #s-letter2{
+      flex-direction:column; align-items:center; justify-content:center;
+      width:100vw; height:100vh; background:#0d0a06;
+    }
+    #letter2-card{
+      width:460px;
+      background:#f5ecd4;
+      background-image:
+        radial-gradient(ellipse at 80% 10%, rgba(180,140,60,0.12) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      box-shadow:3px 4px 18px rgba(0,0,0,0.55);
+      border-radius:2px; padding:28px 34px 24px;
+      display:flex; flex-direction:column; color:#2a1a08;
+    }
+
+    /* ═══════════════════════════════
+       CIPHER MODAL
+    ═══════════════════════════════ */
+    #cipher-modal{
+      display:none; position:fixed; inset:0; background:rgba(4,3,2,0.88);
+      z-index:500; align-items:center; justify-content:center;
+    }
+    .cm-box{
+      background:#100c06; border:1px solid #3a2e14; border-radius:6px;
+      width:820px; display:flex; flex-direction:row; overflow:hidden; max-height:90vh;
+    }
+    .cm-puzzle{
+      flex:1; padding:26px 32px; display:flex; flex-direction:column; gap:16px; overflow-y:auto;
+    }
+    .cm-gemini{
+      width:200px; flex-shrink:0; display:flex; flex-direction:column;
+      background:#08060a; border-left:1px solid #2a2010; position:relative;
+    }
+    .cm-gem-key-overlay{
+      position:absolute; inset:0; background:#08060a; z-index:10;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:9px; padding:16px;
+    }
+    .cm-gem-key-overlay .gem-ov-icon{ font-size:1.3rem; opacity:0.5; }
+    .cm-gem-key-overlay p{ font-size:0.66rem; color:#2a1a4a; text-align:center; line-height:1.6; margin:0; }
+    .cm-gem-key-overlay input{
+      width:100%; background:#0d0a14; border:1px solid #2a1a4a; border-radius:4px;
+      color:#c4a8f0; font-size:0.68rem; padding:6px 8px; font-family:Georgia,serif; outline:none;
+    }
+    .cm-gem-key-overlay button.save-key{
+      width:100%; padding:7px; background:#3a1a6a; border:none; border-radius:4px;
+      color:#c4a8f0; font-size:0.7rem; cursor:pointer; font-family:Georgia,serif;
+    }
+    .cm-gem-key-overlay button.save-key:hover{ background:#4a2a8a; }
+    .cm-gem-hdr{
+      padding:12px 12px 8px; border-bottom:1px solid #18102a;
+      font-size:0.68rem; letter-spacing:2px; color:#9b6ee0; display:flex; align-items:center; gap:6px;
+    }
+    .cm-gem-msgs{
+      flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column;
+      gap:6px; min-height:80px; max-height:320px;
+    }
+    .cm-gem-btns{
+      padding:8px; border-top:1px solid #18102a; display:flex; flex-direction:column; gap:6px;
+    }
+    .cm-title{ font-size:1rem; color:#f0d890; letter-spacing:2px; }
+    .cm-subtitle{ font-size:0.75rem; color:#888; line-height:1.6; }
+    .alpha-grid{
+      display:flex; flex-wrap:wrap; gap:3px;
+      background:#0a0806; border:1px solid #2a1a0a; border-radius:4px; padding:10px;
+    }
+    .alpha-cell{
+      display:flex; flex-direction:column; align-items:center;
+      width:26px; gap:2px;
+    }
+    .alpha-cell .a-letter{ font-size:0.75rem; color:#c8a060; font-weight:bold; }
+    .alpha-cell .a-num{ font-size:0.55rem; color:#555; }
+    .cm-encoded-row{ display:flex; gap:6px; flex-wrap:wrap; }
+    .enc-cell{ display:flex; flex-direction:column; align-items:center; gap:3px; min-width:38px; }
+    .enc-shift{ font-size:0.6rem; color:#c8860a; }
+    .enc-letter{
+      width:38px; height:38px; background:#1e1608; border:1px solid #4a3820;
+      border-radius:3px; display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; color:#f0d890; font-weight:bold;
+    }
+    .enc-decoded{
+      width:38px; height:30px; background:#0d0a06; border:1px solid #2a2010;
+      border-radius:3px; display:flex; align-items:center; justify-content:center;
+      font-size:1rem; color:#444; transition:color .3s, border-color .3s;
+    }
+    .enc-decoded.solved{ color:#4caf50; border-color:#2e6b35; }
+    .cm-actions{ display:flex; gap:12px; align-items:center; }
+    .cm-decode-btn{
+      padding:9px 26px; background:#c8860a; border:none; border-radius:4px;
+      color:#fff; font-size:0.85rem; cursor:pointer; font-family:Georgia,serif;
+    }
+    .cm-decode-btn:disabled{ background:#2a2010; color:#555; cursor:default; }
+    .cm-msg{ font-size:0.72rem; color:#666; }
+    .cm-reveal{
+      display:none; text-align:center; padding:14px; background:#0a1208;
+      border:1px solid #2e5a1e; border-radius:4px;
+      color:#f0d890; letter-spacing:4px; font-size:1.05rem;
+    }
+    .cm-reveal.show{ display:block; animation:fadeUp .5s ease; }
+    @keyframes fadeUp{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+    .cm-continue{
+      display:none; padding:9px 26px; background:#2e5a1e; border:none; border-radius:4px;
+      color:#a8d890; font-size:0.85rem; cursor:pointer; font-family:Georgia,serif; letter-spacing:1px;
+    }
+
+    /* ═══════════════════════════════
+       ZIGZAG MODAL
+    ═══════════════════════════════ */
+    #zigzag-modal{
+      display:none; position:fixed; inset:0; background:rgba(4,3,2,0.88);
+      z-index:500; align-items:center; justify-content:center;
+    }
+    .zz-row{ display:flex; }
+    .zz-cell{
+      width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+      font-size:0.85rem; font-weight:bold;
+    }
+    .zz-cell.rail0{ background:#1e3a18; border:1px solid #2e5a28; border-radius:3px; color:#a8d890; }
+    .zz-cell.rail1{ background:#1a1208; border:1px solid #3a2010; border-radius:3px; color:#c8a060; }
+    .zz-cell.empty{ opacity:0; }
+    .zz-conn-row{ display:flex; height:14px; }
+    .zz-arr{ width:28px; display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:#3a2810; }
+
+    /* ═══════════════════════════════
+       GAME SCREEN (Acts 2 & 3)
+    ═══════════════════════════════ */
+    #s-game{
+      width:860px; background:#100c06; border:1px solid #2a2010;
+      border-radius:4px; overflow:hidden;
+    }
+    #puzzle-panel{
+      flex:1; padding:28px; display:flex; flex-direction:column; gap:18px;
+      border-right:1px solid #2a2010;
+    }
+    .p-tag{ font-size:0.65rem; letter-spacing:3px; color:#c8860a; }
+    .p-title{ font-size:1.1rem; color:#f0d890; }
+    .p-desc{ font-size:0.78rem; color:#a09060; line-height:1.7; }
+
+    #gate-wrap{ display:flex; flex-direction:column; gap:18px; }
+    .circuit-board{
+      background:#0d1a0a; border:1px solid #1e3a18; border-radius:6px;
+      padding:22px; display:flex; flex-direction:column; gap:14px;
+    }
+    .switch-row{ display:flex; align-items:center; gap:14px; }
+    .toggle-switch{
+      width:52px; height:26px; background:#2a1a0a; border:1px solid #4a3010;
+      border-radius:13px; cursor:pointer; position:relative; transition:background .25s; flex-shrink:0;
+    }
+    .toggle-switch.on{ background:#1e4a1a; border-color:#3a8030; }
+    .toggle-knob{
+      width:22px; height:22px; background:#5a3018; border-radius:50%;
+      position:absolute; top:2px; left:2px; transition:left .25s, background .25s;
+    }
+    .toggle-switch.on .toggle-knob{ left:28px; background:#4caf50; }
+    .sw-label{ font-size:0.82rem; color:#a09060; }
+    .sw-label.active{ color:#a8c890; }
+    .gate-bar{ border-left:2px dashed #2a3020; margin-left:26px; padding-left:20px; font-size:0.72rem; color:#507040; letter-spacing:2px; }
+    .gate-output{
+      display:flex; align-items:center; gap:12px; padding:11px 16px;
+      background:#0a1208; border:1px solid #1a2a14; border-radius:4px; margin-top:4px;
+    }
+    .out-bulb{ width:26px; height:26px; border-radius:50%; background:#1a1208; border:2px solid #2a2010; transition:all .4s; }
+    .out-bulb.lit{ background:#f0c020; border-color:#c8a010; box-shadow:0 0 16px #f0c02088; }
+    .out-txt{ font-size:0.78rem; color:#506040; }
+    .out-txt.ok{ color:#6caf50; }
+
+    #lock-wrap{ display:flex; flex-direction:column; gap:18px; align-items:center; }
+    .lock-face{
+      background:#1a1208; border:3px solid #4a3820; border-radius:12px;
+      padding:28px 38px; display:flex; flex-direction:column; align-items:center; gap:18px;
+    }
+    .lock-lbl{ font-size:0.65rem; letter-spacing:3px; color:#6a5030; }
+    .wheels-row{ display:flex; gap:10px; }
+    .dwheel{ display:flex; flex-direction:column; align-items:center; gap:5px; }
+    .wbtn{
+      width:40px; height:24px; background:#2a1e0a; border:1px solid #4a3820;
+      border-radius:3px; color:#c8a050; font-size:0.9rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .wbtn:hover{ background:#3a2e14; }
+    .wdigit-wrap{
+      transform:rotate(180deg);
+    }
+    .wdigit{
+      width:40px; height:54px; background:#0d0a05; border:2px solid #4a3820;
+      border-radius:4px; display:flex; align-items:center; justify-content:center;
+      font-size:2rem; color:#f0d890; font-weight:bold;
+    }
+    .wdigit.spin{ animation:sd .22s ease; }
+    @keyframes sd{ 0%{transform:translateY(14px);opacity:0;} 100%{transform:translateY(0);opacity:1;} }
+    .lock-status{ font-size:0.75rem; letter-spacing:3px; color:#6a5030; }
+    .lock-status.open{ color:#4caf50; }
+    #lock-open-msg{ display:none; text-align:center; animation:fadeUp .5s ease; }
+    #lock-open-msg.show{ display:block; }
+
+    .puzzle-next-row{ margin-top:auto; }
+    .btn-next{
+      display:none; padding:10px 26px; background:#c8860a; border:none; border-radius:5px;
+      color:#fff; font-size:0.85rem; cursor:pointer; font-family:Georgia,serif; letter-spacing:1px;
+    }
+    .btn-ghost-sm{
+      padding:10px 18px; background:transparent; border:1px solid #2a2010;
+      border-radius:5px; color:#555; font-size:0.78rem; cursor:pointer; font-family:Georgia,serif;
+    }
+
+    .dest-reveal{
+      display:none; padding:12px 18px; background:#0a1208; border:1px solid #2e5a1e;
+      border-radius:4px; text-align:center; color:#f0d890; letter-spacing:3px; font-size:0.95rem;
+    }
+    .dest-reveal.show{ display:block; animation:fadeUp .5s ease; }
+
+    /* ═══════════════════════════════
+       GEMINI PANEL
+    ═══════════════════════════════ */
+    #gemini-panel{
+      width:230px; flex-shrink:0; display:flex; flex-direction:column;
+      background:#08060a; position:relative;
+    }
+    .gem-hdr{ padding:14px 14px 10px; border-bottom:1px solid #18102a; display:flex; align-items:center; gap:8px; }
+    .gem-icon{ font-size:1.1rem; }
+    .gem-title{ font-size:0.72rem; letter-spacing:2px; color:#9b6ee0; }
+    .gem-msgs{ flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:8px; max-height:380px; min-height:0; }
+    .gem-bbl{ padding:8px 10px; border-radius:6px; font-size:0.73rem; line-height:1.6; }
+    .gem-bbl.g{ background:#120e1c; border:1px solid #2a1a4a; color:#c4a8f0; border-radius:0 6px 6px 6px; }
+    .gem-bbl.u{ background:#1a1208; border:1px solid #2a2010; color:#c8b070; border-radius:6px 0 6px 6px; align-self:flex-end; }
+    .gem-bbl.t{ color:#3a2a5a; font-style:italic; background:#120e1c; border:1px solid #2a1a4a; }
+
+    /* API-key overlay */
+    #gem-key-overlay{
+      position:absolute; inset:0; background:#08060a; z-index:10;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:10px; padding:18px;
+    }
+    #gem-key-overlay .gem-ov-icon{ font-size:1.4rem; opacity:0.5; }
+    #gem-key-overlay p{ font-size:0.68rem; color:#2a1a4a; text-align:center; line-height:1.65; }
+    #gem-key-inp{
+      width:100%; background:#0d0a14; border:1px solid #2a1a4a; border-radius:4px;
+      color:#c4a8f0; font-size:0.7rem; padding:7px 9px;
+      font-family:Georgia,serif; outline:none;
+    }
+    #gem-key-inp::placeholder{ color:#1e1030; }
+    .gem-ov-save{
+      width:100%; padding:8px; background:#3a1a6a; border:none; border-radius:4px;
+      color:#c4a8f0; font-size:0.72rem; cursor:pointer; font-family:Georgia,serif;
+    }
+    .gem-ov-save:hover{ background:#4a2a8a; }
+    .gem-ov-skip{
+      background:transparent; border:none; color:#2a1a4a; font-size:0.62rem;
+      cursor:pointer; text-decoration:underline; font-family:Georgia,serif;
+    }
+    .gem-ov-skip:hover{ color:#4a3060; }
+
+    /* Hint / Solve buttons */
+    .gem-btn-row{ padding:10px; border-top:1px solid #18102a; display:flex; flex-direction:column; gap:7px; }
+    .gem-action{
+      padding:9px 12px; border-radius:4px; font-size:0.72rem; cursor:pointer;
+      font-family:Georgia,serif; letter-spacing:1px; border:1px solid; text-align:left;
+    }
+    .gem-action.hint{ background:#1a0a3a; border-color:#3a1a6a; color:#9b6ee0; }
+    .gem-action.hint:hover{ background:#240e4a; }
+    .gem-action.solve{ background:#0a2a14; border-color:#1a5a2a; color:#6caf80; }
+    .gem-action.solve:hover{ background:#0c3418; }
+    .gem-action.example{ background:#1a1a08; border-color:#3a3a12; color:#b0a050; }
+    .gem-action.example:hover{ background:#222210; }
+
+    /* ═══════════════════════════════
+       END SCREEN
+    ═══════════════════════════════ */
+    #s-end{
+      flex-direction:column; align-items:center; justify-content:center;
+      width:100vw; height:100vh; background:#080604; position:relative; overflow:hidden;
+    }
+    #s-end .sun{ font-size:3.2rem; }
+    #s-end h2{ font-size:1.8rem; color:#f0d890; letter-spacing:3px; }
+    #s-end p{ font-size:0.85rem; color:#a09060; max-width:380px; line-height:1.8; }
+    #s-end .end-links{ display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:6px; }
+    #s-end .end-links a.btn-primary{
+      display:inline-block; padding:11px 34px;
+      background:#c8860a; border-radius:6px; color:#fff; text-decoration:none;
+      font-size:0.88rem; letter-spacing:1px;
+    }
+    #s-end .end-links .btn-row{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+    #s-end .end-links a.btn-ghost{
+      display:inline-block; padding:8px 20px;
+      border:1px solid #3a2810; border-radius:4px; color:#a08050; text-decoration:none;
+      font-size:0.72rem; letter-spacing:1px;
+    }
+    #s-end .end-links a.btn-ghost:hover{ color:#c8a060; border-color:#5a3820; }
+    #s-end .end-links a.btn-text{
+      font-size:0.65rem; color:#2a1a08; letter-spacing:1px; text-decoration:underline; cursor:pointer;
+    }
+    #s-end .end-links a.btn-text:hover{ color:#664422; }
+    #s-end .end-divider{ width:120px; height:1px; background:#c8860a; opacity:0.4; }
+    .outro-item{
+      opacity:0; transform:translateY(22px);
+      transition:opacity 0.9s ease, transform 0.9s ease;
+    }
+  </style>
+</head>
+<body>
+
+<button id="btn-skip" onclick="skipToEnd()">Skip Chapter ›</button>
+
+<!-- ── Chapter 3 Intro Overlay ── -->
+<div id="ch3-intro" onclick="dismissCh3Intro()"
+  style="position:fixed;inset:0;z-index:999;cursor:pointer;overflow:hidden;transition:opacity 0.7s;">
+  <img src="./ch3-intro.png" alt=""
+    style="width:100%;height:100%;object-fit:cover;display:block;"
+    onerror="this.style.background='#080604'"/>
+  <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.2) 50%,rgba(0,0,0,0.55) 100%);"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;">
+    <div style="background:rgba(6,13,31,0.72);border:1px solid rgba(200,134,10,0.4);border-radius:14px;padding:28px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;backdrop-filter:blur(4px);">
+      <div style="font-size:0.62rem;letter-spacing:6px;color:#c8860a;">JUNE 20, 1865</div>
+      <div style="width:80px;height:1px;background:#c8860a;opacity:0.5;"></div>
+      <div style="font-size:0.62rem;letter-spacing:4px;color:#aaa;">CHAPTER THREE</div>
+      <div style="font-size:2.4rem;color:#f0d890;letter-spacing:3px;font-family:Georgia,serif;font-weight:normal;">June's Horizon</div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:36px;left:0;right:0;text-align:center;font-size:0.6rem;letter-spacing:3px;color:#444;animation:blink 0.8s step-end infinite;">CLICK ANYWHERE TO CONTINUE</div>
+</div>
+<script>
+function dismissCh3Intro(){
+  const el=document.getElementById('ch3-intro');
+  el.style.opacity='0';
+  setTimeout(()=>{
+    el.remove();
+    goTo('scene');
+    setTimeout(startScene, 200);
+  },700);
+}
+document.addEventListener('keydown',()=>{
+  if(document.getElementById('ch3-intro'))dismissCh3Intro();
+},{once:true});
+</script>
+
+<!-- ── SCENE 1 (Mayor's Office) ── -->
+<div id="s-scene" class="screen">
+  <div class="scene-img-wrap">
+    <img id="scene-img" src="scenes/scene1.png" alt="" onerror="this.style.display='none'"/>
+    <div class="scene-grad-b"></div>
+    <div class="scene-grad-t"></div>
+    <div class="scene-hdg" id="scene-heading">THE MAYOR'S OFFICE</div>
+  </div>
+</div>
+
+<!-- ── SCENE 2 (selected location) ── -->
+<div id="s-scene2" class="screen">
+  <div class="scene-img-wrap">
+    <img src="scenes/scene2.png" alt="" onerror="this.style.display='none'"/>
+    <div class="scene-grad-b"></div>
+    <div class="scene-grad-t"></div>
+    <div class="scene-hdg" id="scene2-heading"></div>
+  </div>
+</div>
+
+<!-- ── SCENE 3 (Cellar — June & Thomas) ── -->
+<div id="s-scene3" class="screen">
+  <div class="scene-img-wrap">
+    <img src="scenes/scene3.png" alt="" onerror="this.style.display='none'"/>
+    <div class="scene-grad-b"></div>
+    <div class="scene-grad-t"></div>
+    <div class="scene-hdg">THE CELLAR</div>
+  </div>
+</div>
+
+<!-- ── DIALOGUE (fixed overlay, shared) ── -->
+<div id="dialogue">
+  <div id="dlg-single"><div class="spk" id="dlg-spk"></div><div class="txt" id="dlg-txt"></div></div>
+  <div id="dlg-dual">
+    <div class="dlg-char" id="dlg-c1">
+      <img id="dlg-img1" src="persons/june.png" onerror="this.style.background='#2a1a0a'" alt=""/>
+      <span class="cname" id="dlg-name1">JUNE</span>
+    </div>
+    <div id="dlg-dual-txt"></div>
+    <div class="dlg-char" id="dlg-c2">
+      <img id="dlg-img2" src="persons/mayor.png" onerror="this.style.background='#2a1a0a'" alt=""/>
+      <span class="cname" id="dlg-name2">THE MAYOR</span>
+    </div>
+  </div>
+  <div class="dlg-hint">SPACE or click to continue</div>
+</div>
+
+<!-- ── LETTER 1 (father → June, shifting cipher on back) ── -->
+<div id="s-letter" class="screen" style="flex-direction:column;align-items:center;justify-content:center;width:100vw;height:100vh;background:#0d0a06;perspective:1400px;">
+  <div style="width:560px;height:680px;position:relative;transform-style:preserve-3d;">
+    <div id="letter-inner">
+      <!-- FRONT -->
+      <div class="letter-side" id="letter-front">
+        <div class="letter-date">June 12, 1862 — Written in Haste</div>
+        <div class="letter-salutation">To my dearest child, June,</div>
+        <div class="letter-line"></div>
+       <div class="letter-body">
+        <p class="indent">If you are reading this, the Mayor kept his promise — and you have grown brave enough to seek your own answers. I always knew you would.</p>
+        <p class="indent">Years ago, when the danger became too great, I had to make the hardest choice of my life. I kept you safe by placing you with a kind family who promised to raise you away from the shadows of my past.</p>
+        <p class="indent">I was a bookkeeper for Whitmore &amp; Sons. I uncovered they were moving enslaved people hidden beneath tobacco barrels. When they found out I knew, they sent men after me. But as Abraham Lincoln has now announced freedom for the enslaved, I think soon all these hurdles will be over.</p>
+        <p class="indent">Right now, I am actively escaping this place with my trusted friend Dinesh. Your mother and sister are alive. I am going to find them. Follow the trail I have left you — we will be together again.</p>
+      </div>
+        <div class="letter-line"></div>
+        <div class="letter-sig">With all the love a father carries,<br/><em>— Your Father</em></div>
+        <button class="letter-btn" onclick="flipLetter()">Turn Over →</button>
+      </div>
+
+      <!-- BACK -->
+      <div class="letter-side letter-back" style="justify-content:center;gap:14px;">
+        <div class="back-top-line">REVERSE SIDE — CODED COORDINATES</div>
+        <p class="back-note">"I encrypted the location in case this letter fell into the wrong hands. You are smart enough to crack it — you always were."</p>
+        <div class="cipher-box">
+          <div class="cipher-encoded" id="letter-encoded-text"></div>
+          <div class="cipher-name-label">— THE SHIFTING DIAL CIPHER —</div>
+        </div>
+        <p class="back-instructions">Each letter in the encoded text was shifted forward by its position number in the sequence.<br/>Position 1 shifts +1 · Position 2 shifts +2 · Position 3 shifts +3 · and so on...<br/><br/>Reverse the shifts to find where father is hiding.</p>
+        <button class="solve-btn" onclick="openCipherModal()">Solve This Cipher</button>
+        <button class="letter-btn" style="margin-top:4px;align-self:flex-start" onclick="flipLetter()">← Turn Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LETTER 2 (father → mother, rail fence cipher) ── -->
+<div id="s-letter2" class="screen">
+  <div id="letter2-card">
+    <div class="letter-date" style="position:relative">June 17, 1865 — Written in Haste</div>
+    <div class="letter-salutation" style="font-size:0.95rem">My dearest Clara,</div>
+    <div class="letter-line"></div>
+    <div class="letter-body" style="font-size:0.79rem;line-height:1.78;flex:none;">
+      <p class="indent">The war has torn everything open. Lincoln's proclamation reached us, but the roads are not safe — the Whitmore men turned violent the moment they lost their hold on us.</p>
+      <p class="indent">I am coming to you and Lily. I know the journey is dangerous, but I cannot wait any longer. June is protected — I placed her with a good family before I had to run. She will find her way to us.</p>
+      <p class="indent">Stay inside. Keep Lily close. I will be at the river landing before the week is out. Watch for me at the water's edge. I have left a hidden message in the pattern below — read it when you need strength.</p>
+    </div>
+    <div class="letter-line"></div>
+    <div class="letter-sig" style="font-size:0.82rem">With every breath of love,<br/><em>— Your Husband</em></div>
+    <div style="margin-top:14px;background:rgba(100,70,20,0.08);border:1px solid rgba(100,70,20,0.25);border-radius:3px;padding:13px 18px;">
+      <div id="zz-letter-display" style="font-size:0.95rem;letter-spacing:5px;color:#2a1a08;font-weight:bold;text-align:center;font-family:Georgia,serif;">TIMH · HRVROT · EEU</div>
+      <div style="text-align:center;font-size:0.62rem;letter-spacing:3px;color:#8b6020;border-top:1px solid rgba(100,70,20,0.2);padding-top:7px;margin-top:7px;">— THE RAIL FENCE CIPHER —</div>
+    </div>
+    <button class="solve-btn" style="margin-top:14px;align-self:center;font-size:0.8rem;padding:9px 22px;" onclick="openZigzagModal()">Solve This Cipher</button>
+  </div>
+</div>
+
+<!-- ── CIPHER MODAL (shifting dial) ── -->
+<div id="cipher-modal">
+  <div class="cm-box">
+    <div class="cm-puzzle">
+      <div class="cm-title">⚙ THE SHIFTING DIAL CIPHER</div>
+      <div class="cm-subtitle">Each letter was shifted forward by its position number (+1 for letter 1, +2 for letter 2…). Reverse the shifts to decode the hidden location.</div>
+      <div class="alpha-grid" id="cm-alpha-grid"></div>
+      <div class="cm-encoded-row" id="cm-tiles"></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <label style="font-size:0.7rem;color:#555;letter-spacing:2px">YOUR DECODED ANSWER</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="cm-answer"
+            style="flex:1;background:#0d0a06;border:1px solid #4a3820;border-radius:4px;color:#f0d890;font-size:0.95rem;padding:8px 12px;font-family:Georgia,serif;letter-spacing:3px;text-transform:uppercase;outline:none"
+            placeholder="Type the hidden location…"
+            oninput="checkAnswer(false)"
+            onkeydown="if(event.key==='Enter')checkAnswer(true)"/>
+          <button class="cm-decode-btn" id="cm-decode-btn" onclick="checkAnswer(true)">Submit</button>
+        </div>
+        <span class="cm-msg" id="cm-msg">Reverse the shifts to find where father is hiding</span>
+      </div>
+      <div class="cm-reveal" id="cm-reveal">📍 <span id="cm-reveal-text"></span></div>
+      <div style="display:flex;gap:10px">
+        <button class="cm-continue" id="cm-continue" onclick="cipherSolved()"></button>
+        <button style="padding:9px 18px;background:transparent;border:1px solid #2a2010;border-radius:4px;color:#555;font-size:0.8rem;cursor:pointer;font-family:Georgia,serif" onclick="document.getElementById('cipher-modal').style.display='none'">← Back to Letter</button>
+      </div>
+    </div>
+    <div class="cm-gemini">
+      <div class="cm-gem-key-overlay" id="cm-gem-key-overlay">
+        <span class="gem-ov-icon">✦</span>
+        <p>Add your Gemini API key to unlock AI hints.</p>
+        <input id="cm-gem-key-inp" type="password" placeholder="AIza…" autocomplete="off"/>
+        <button class="save-key" onclick="saveModalGeminiKey('cm')">Save Key</button>
+      </div>
+      <div class="cm-gem-hdr">✦ GEMINI COMPANION</div>
+      <div class="cm-gem-msgs" id="cm-gem-msgs"></div>
+      <div class="cm-gem-btns">
+        <button id="cm-gem-hint-btn"    class="gem-action hint"    onclick="requestModalGeminiHint()">💡 Hint</button>
+        <button id="cm-gem-example-btn" class="gem-action example" onclick="requestModalGeminiExample()" style="display:none">📖 Example</button>
+        <button id="cm-gem-solve-btn"   class="gem-action solve"   onclick="requestModalGeminiSolve()" style="display:none">✓ Solve for me</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ZIGZAG MODAL (rail fence) ── -->
+<div id="zigzag-modal">
+  <div class="cm-box">
+    <div class="cm-puzzle">
+      <div class="cm-title">⟡ THE RAIL FENCE CIPHER</div>
+      <div class="cm-subtitle">Letters are written in a zigzag across three rows (rails), then read rail by rail. Trace the path back to recover the original message.</div>
+      <div id="zz-visual" style="background:#0a0806;border:1px solid #2a1a0a;border-radius:4px;padding:14px;"></div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:0.68rem;color:#444;letter-spacing:2px">ENCODED TEXT (rail 0 · rail 1 · rail 2)</div>
+        <div style="font-size:1.05rem;letter-spacing:4px;color:#c8a060;font-weight:bold" id="zz-encoded-flat"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <label style="font-size:0.7rem;color:#555;letter-spacing:2px">YOUR DECODED ANSWER</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="zz-answer"
+            style="flex:1;background:#0d0a06;border:1px solid #4a3820;border-radius:4px;color:#f0d890;font-size:0.95rem;padding:8px 12px;font-family:Georgia,serif;letter-spacing:3px;text-transform:uppercase;outline:none"
+            placeholder="Decode the hidden message…"
+            oninput="checkZigzagAnswer(false)"
+            onkeydown="if(event.key==='Enter')checkZigzagAnswer(true)"/>
+          <button class="cm-decode-btn" onclick="checkZigzagAnswer(true)">Submit</button>
+        </div>
+        <span class="cm-msg" id="zz-msg">Interleave the three rows to recover the original</span>
+      </div>
+      <div class="cm-reveal" id="zz-reveal">📍 THE RIVER MOUTH</div>
+      <div style="display:flex;gap:10px">
+        <button class="cm-continue" id="zz-continue" onclick="zigzagSolved()">Continue the Journey →</button>
+        <button style="padding:9px 18px;background:transparent;border:1px solid #2a2010;border-radius:4px;color:#555;font-size:0.8rem;cursor:pointer;font-family:Georgia,serif" onclick="document.getElementById('zigzag-modal').style.display='none'">← Back to Letter</button>
+      </div>
+    </div>
+    <div class="cm-gemini">
+      <div class="cm-gem-key-overlay" id="zz-gem-key-overlay">
+        <span class="gem-ov-icon">✦</span>
+        <p>Add your Gemini API key to unlock AI hints.</p>
+        <input id="zz-gem-key-inp" type="password" placeholder="AIza…" autocomplete="off"/>
+        <button class="save-key" onclick="saveModalGeminiKey('zz')">Save Key</button>
+      </div>
+      <div class="cm-gem-hdr">✦ GEMINI COMPANION</div>
+      <div class="cm-gem-msgs" id="zz-gem-msgs"></div>
+      <div class="cm-gem-btns">
+        <button id="zz-gem-hint-btn"    class="gem-action hint"    onclick="requestModalGeminiHint()">💡 Hint</button>
+        <button id="zz-gem-example-btn" class="gem-action example" onclick="requestModalGeminiExample()" style="display:none">📖 Example</button>
+        <button id="zz-gem-solve-btn"   class="gem-action solve"   onclick="requestModalGeminiSolve()" style="display:none">✓ Solve for me</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GAME SCREEN (Acts 2 & 3) ── -->
+<div id="s-game" class="screen">
+  <div id="puzzle-panel">
+    <span class="p-tag" id="p-tag"></span>
+    <h3 class="p-title" id="p-title"></h3>
+    <p class="p-desc" id="p-desc"></p>
+
+    <div id="gate-wrap" style="display:none">
+      <div class="circuit-board" id="circuit-board"></div>
+      <div class="dest-reveal" id="gate-reveal">📍 THE COMPASS COVE BY THE RIVER</div>
+    </div>
+
+    <div id="lock-wrap" style="display:none">
+      <div class="lock-face">
+        <span class="lock-lbl">OUTSIDE CODE (Thomas read this)</span>
+        <div id="outside-code-display" style="font-size:1.8rem;letter-spacing:10px;color:#c8860a;font-weight:bold;font-family:Georgia,serif;margin:8px 0 4px;"></div>
+        <div style="font-size:0.6rem;letter-spacing:2px;color:#3a2810;margin-bottom:12px;">↓ mirror each digit + reverse the order ↓</div>
+        <span class="lock-lbl">YOUR INSIDE COMBINATION</span>
+        <div class="wheels-row" id="wheels-row"></div>
+        <span class="lock-status" id="lock-status">LOCKED</span>
+      </div>
+      <div id="lock-open-msg">
+        <div style="font-size:1.8rem">🔓</div>
+        <div style="color:#4caf50;letter-spacing:3px;font-size:0.9rem;margin-top:8px">THE LOCK CLICKS OPEN</div>
+        <div style="color:#a8d890;font-size:0.75rem;margin-top:6px">June and Thomas run toward the light</div>
+      </div>
+    </div>
+
+    <div class="puzzle-next-row" style="display:flex;gap:10px;margin-top:auto">
+      <button class="btn-next" id="btn-next" onclick="advanceAct()"></button>
+      <button class="btn-ghost-sm" onclick="advanceAct()">Skip Act</button>
+    </div>
+  </div>
+
+  <div id="gemini-panel">
+    <!-- API key overlay — shown when no key is saved -->
+    <div id="gem-key-overlay">
+      <span class="gem-ov-icon">✦</span>
+      <p>Add your Gemini API key for AI-powered hints, or continue with built-in hints.</p>
+      <input id="gem-key-inp" type="password" placeholder="AIza…" autocomplete="off"/>
+      <button class="gem-ov-save" onclick="saveGeminiKey()">Save Key</button>
+      <button class="gem-ov-skip" onclick="useBuiltinHints()">Continue without key</button>
+    </div>
+
+    <div class="gem-hdr"><span class="gem-icon">✦</span><span class="gem-title">GEMINI COMPANION</span></div>
+    <div class="gem-msgs" id="gem-msgs"></div>
+    <div class="gem-btn-row">
+      <button id="gem-hint-btn"    class="gem-action hint"    onclick="requestGeminiHint()">💡 Hint</button>
+      <button id="gem-example-btn" class="gem-action example" onclick="requestGeminiExample()" style="display:none">📖 Example</button>
+      <button id="gem-solve-btn"   class="gem-action solve"   onclick="requestGeminiSolve()" style="display:none">✓ Solve for me</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── END ── -->
+<div id="s-end" class="screen">
+  <canvas id="sparkle-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;"></canvas>
+  <img src="../outro.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:0;" onerror="this.style.display='none'"/>
+  <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.18) 55%,rgba(0,0,0,0.62) 100%);pointer-events:none;z-index:1;"></div>
+  <div style="position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:40px 28px;max-width:520px;width:100%;">
+    <div style="background:rgba(6,13,31,0.72);border:1px solid rgba(200,134,10,0.4);border-radius:16px;padding:30px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;backdrop-filter:blur(4px);width:100%;">
+    <div class="outro-item sun">☀️</div>
+    <div class="outro-item" style="font-size:0.62rem;letter-spacing:6px;color:#c8860a;">JUNE 21, 1865</div>
+    <h2 class="outro-item">THE FAMILY REUNITED</h2>
+    <p class="outro-item">At the river's edge, as morning mist clears from the water, three familiar shapes appear — her mother, little Lily, and the father who spent three years leaving breadcrumbs home. June runs. There are no words, only arms around each other, tears, and sunlight. Freedom has arrived, and it brought the whole family with it.</p>
+    <div class="outro-item end-divider"></div>
+    <div class="outro-item end-links">
+      <a class="btn-primary" href="https://github.com/yourusername/juneteenth-1865" target="_blank">⭐ Star this Repo on GitHub</a>
+      <div class="btn-row">
+        <a class="btn-ghost" href="https://www.juneteenth.com" target="_blank">Learn about Juneteenth</a>
+        <a class="btn-ghost" href="https://en.wikipedia.org/wiki/Alan_Turing" target="_blank">Learn about Alan Turing</a>
+      </div>
+      <a class="btn-text" href="../index.html">Return to Start</a>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

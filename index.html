@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juneteenth: 1865</title>
+  <style>
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{
+      font-family:Georgia,serif; color:#e8d8b0;
+      display:flex; align-items:center; justify-content:center;
+      min-height:100vh; overflow:hidden;
+    }
+    .landing{
+      position:relative; z-index:1;
+      display:flex; flex-direction:column; align-items:center;
+      gap:14px; text-align:center; padding:40px 24px;
+    }
+    .logo-bg-year{
+      position:absolute; top:-24px; left:50%; transform:translateX(-50%);
+      font-size:7rem; font-weight:bold; letter-spacing:8px;
+      color:rgba(200,134,10,0.07); user-select:none; pointer-events:none;
+      white-space:nowrap;
+    }
+    .eyebrow{ font-size:0.6rem; letter-spacing:6px; color:#c8860a; }
+    .game-title{
+      font-size:3rem; color:#f0d890; letter-spacing:6px;
+      font-weight:normal; line-height:1.15;
+    }
+    .title-year{
+      font-size:1rem; letter-spacing:10px; color:#664422; display:block;
+      margin-top:4px;
+    }
+    .game-sub{ font-size:0.72rem; color:#3a2010; letter-spacing:2px; }
+    .divider{
+      width:180px; height:1px;
+      background:linear-gradient(to right,transparent,#3a2010 40%,#3a2010 60%,transparent);
+      margin:4px 0;
+    }
+
+    /* API Key */
+    .key-label{ font-size:0.65rem; letter-spacing:2px; color:#444; }
+    .key-label em{ color:#2a1a08; font-style:normal; }
+    .key-row{ display:flex; gap:8px; }
+    .key-inp{
+      width:280px; padding:10px 14px; border:1px solid #1e1208; border-radius:5px;
+      background:#080502; color:#c8a060; font-size:0.88rem; outline:none;
+      font-family:Georgia,serif; letter-spacing:1px;
+    }
+    .key-inp:focus{ border-color:#c8860a; }
+    .key-inp::placeholder{ color:#1e1208; }
+    .key-save{
+      padding:0 16px; background:#100c06; border:1px solid #3a2810;
+      border-radius:5px; color:#c8a060; font-size:0.75rem; cursor:pointer;
+      font-family:Georgia,serif;
+    }
+    .key-save:hover{ background:#1e1608; }
+    .key-status{ font-size:0.62rem; color:#2e5a1e; letter-spacing:1px; min-height:14px; }
+
+    /* Start */
+    .btn-start{
+      padding:13px 46px; background:#c8860a; border:none; border-radius:5px;
+      color:#fff; font-size:0.95rem; cursor:pointer; letter-spacing:3px;
+      font-family:Georgia,serif; margin-top:10px; transition:background .2s;
+    }
+    .btn-start:hover{ background:#e09a10; }
+    .skip-link{
+      font-size:0.62rem; color:#2a1a08; letter-spacing:1px; cursor:pointer;
+      text-decoration:underline;
+    }
+    .skip-link:hover{ color:#664422; }
+
+    /* Footer */
+    .footer{ display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:14px; }
+    .footer a{
+      font-size:0.68rem; color:#3a2810; letter-spacing:1px; text-decoration:none;
+      padding:7px 18px; border:1px solid #1a1208; border-radius:4px;
+      transition:color .2s, border-color .2s;
+    }
+    .footer a:hover{ color:#c8860a; border-color:#3a2010; }
+  </style>
+</head>
+<body>
+
+<div class="landing">
+  <div class="logo-bg-year">1865</div>
+  <span class="eyebrow">AN INTERACTIVE STORY</span>
+  <h1 class="game-title">JUNETEENTH<span class="title-year">1865</span></h1>
+  <p class="game-sub">June 19, 1865 — The day freedom arrived by sea</p>
+  <div class="divider"></div>
+
+  <span class="key-label">GEMINI AI KEY <em>(optional — powers in-game hints)</em></span>
+  <div class="key-row">
+    <input type="password" id="apiKey" class="key-inp" placeholder="AIza…" autocomplete="off"/>
+    <button class="key-save" onclick="saveKey()">Save</button>
+  </div>
+  <span class="key-status" id="keyStatus"></span>
+
+  <button class="btn-start" onclick="begin()">BEGIN THE JOURNEY</button>
+  <span class="skip-link" onclick="begin()">Continue without API key</span>
+
+  <div class="footer">
+    <a href="https://github.com/yourusername/juneteenth-1865" target="_blank">⭐ Star on GitHub</a>
+  </div>
+</div>
+
+<script>
+/* ── Starfield ───────────────────────────────────────────────────────── */
+(function(){
+  const c = document.createElement('canvas');
+  c.style.cssText = 'position:fixed;inset:0;z-index:0;';
+  document.body.prepend(c);
+  const ctx = c.getContext('2d');
+  c.width = window.innerWidth; c.height = window.innerHeight;
+
+  // Night gradient
+  const g = ctx.createLinearGradient(0,0,0,c.height);
+  g.addColorStop(0,'#04091a'); g.addColorStop(1,'#010305');
+  ctx.fillStyle = g; ctx.fillRect(0,0,c.width,c.height);
+
+  // Stars
+  for (let i = 0; i < 260; i++) {
+    ctx.beginPath();
+    ctx.arc(Math.random()*c.width, Math.random()*c.height, Math.random()*.9+.1, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(255,255,255,${.2+Math.random()*.75})`;
+    ctx.fill();
+  }
+
+  // Soft moon glow
+  const mg = ctx.createRadialGradient(c.width*.76,c.height*.09,0, c.width*.76,c.height*.09,100);
+  mg.addColorStop(0,'rgba(255,242,200,.14)'); mg.addColorStop(1,'transparent');
+  ctx.fillStyle = mg; ctx.fillRect(0,0,c.width,c.height);
+
+  // Horizon glow (faint golden at bottom-center)
+  const hg = ctx.createRadialGradient(c.width*.5,c.height,0, c.width*.5,c.height,c.height*.4);
+  hg.addColorStop(0,'rgba(200,100,10,.06)'); hg.addColorStop(1,'transparent');
+  ctx.fillStyle = hg; ctx.fillRect(0,0,c.width,c.height);
+})();
+
+/* ── API Key ─────────────────────────────────────────────────────────── */
+const inp    = document.getElementById('apiKey');
+const status = document.getElementById('keyStatus');
+const saved  = localStorage.getItem('gemini_api_key');
+if (saved) { inp.value = '(saved)'; status.textContent = '✓ API key loaded'; }
+
+function saveKey() {
+  const v = inp.value.trim();
+  if (v && v !== '(saved)') {
+    localStorage.setItem('gemini_api_key', v);
+    status.textContent = '✓ Key saved';
+  }
+}
+inp.addEventListener('input', () => {
+  const v = inp.value.trim();
+  if (v) localStorage.setItem('gemini_api_key', v);
+});
+inp.addEventListener('keydown', e => { if (e.key === 'Enter') begin(); });
+
+function begin() {
+  const v = inp.value.trim();
+  if (v && v !== '(saved)') localStorage.setItem('gemini_api_key', v);
+  window.location.href = 'chapter1/index.html';
+}
+</script>
+</body>
+</html>
