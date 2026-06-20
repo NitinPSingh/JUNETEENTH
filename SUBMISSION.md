@@ -49,7 +49,7 @@ Each cipher has a **Gemini AI Companion** with a sequential hint flow: **Hint �
 
 ## Video Demo
 
-<!-- Record a short walkthrough: landing page → Chapter 1 ship runner → Chapter 2 curtain + bell puzzle → Chapter 3 ciphers → outro family reunion -->
+{% youtube L_xiLhG66C4 %}
 
 ---
 
