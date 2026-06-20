@@ -329,6 +329,10 @@ function zigzagSolved() {
   startScene3();
 }
 
+// ─── MIRROR LOCK DATA ────────────────────────────────────────────────────────
+const OUTSIDE_CODE  = Array.from({length: 4}, () => Math.floor(Math.random() * 10));
+const MIRROR_ANSWER = OUTSIDE_CODE.map(d => (d + 5) % 10).reverse();
+
 // ─── GEMINI FALLBACKS (shown when API quota is exceeded) ─────────────────────
 const GEMINI_FALLBACKS = {
   hint: {
@@ -559,10 +563,7 @@ function startScene3() {
   }, 350);
 }
 
-// ─── MIRROR LOCK DATA ────────────────────────────────────────────────────────
-const OUTSIDE_CODE  = Array.from({length: 4}, () => Math.floor(Math.random() * 10));
-const MIRROR_ANSWER = OUTSIDE_CODE.map(d => (d + 5) % 10).reverse();
-let wheelVals       = [0, 0, 0, 0];
+let wheelVals = [0, 0, 0, 0];
 
 // ─── GAME SCREEN ─────────────────────────────────────────────────────────────
 let currentAct    = 3;

@@ -324,9 +324,6 @@ function loop() { update(); draw(); requestAnimationFrame(loop); }
 
 // ─── AUTO-START ─────────────────────────────────────────────────────────────
 loadAssets(() => {
-  for (const key of ['ship', 'obs1', 'obs2', 'obs3', 'lighthouse']) {
-    if (hasImg(key)) IMG[key + '_t'] = makeTransparent(IMG[key], 210);
-  }
   gamePhase = 'intro';
   ship = { lane: 1, x: LANES[1], y: H - 130 };
   loop();
