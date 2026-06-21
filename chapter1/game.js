@@ -158,6 +158,8 @@ function renderLine() {
 document.addEventListener('keydown', e => {
   if (isDialogueOpen() && e.code === 'Space') { e.preventDefault(); renderLine(); }
 });
+dlgEl.addEventListener('click', () => { if (isDialogueOpen()) renderLine(); });
+dlgEl.addEventListener('touchend', e => { e.preventDefault(); if (isDialogueOpen()) renderLine(); });
 
 // ─── INPUT ─────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
@@ -168,6 +170,31 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.code === 'KeyR' && gamePhase === 'lose') resetGame();
+});
+
+// ─── TOUCH INPUT ────────────────────────────────────────────────────────────
+let touchStartX = null;
+canvas.addEventListener('touchstart', e => {
+  if (isDialogueOpen()) return;
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+canvas.addEventListener('touchend', e => {
+  if (isDialogueOpen()) return;
+  if (gamePhase === 'lose') { resetGame(); return; }
+  if (gamePhase !== 'phase1' && gamePhase !== 'phase2') return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 20) {
+    // swipe
+    if (dx < 0 && ship.lane > 0) ship.lane--;
+    if (dx > 0 && ship.lane < 2) ship.lane++;
+  } else {
+    // tap: left third → left, right third → right, middle → do nothing
+    const rect = canvas.getBoundingClientRect();
+    const tx = e.changedTouches[0].clientX - rect.left;
+    if (tx < W / 3 && ship.lane > 0) ship.lane--;
+    else if (tx > (W * 2) / 3 && ship.lane < 2) ship.lane++;
+  }
+  touchStartX = null;
 });
 
 // ─── SPAWN ─────────────────────────────────────────────────────────────────
@@ -282,6 +309,13 @@ function drawHUD() {
     ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(10,46,228,28);
     ctx.fillStyle = '#aac8ff'; ctx.font = '12px Georgia';
     ctx.fillText(`Obstacles dodged: ${obstaclesDodged} / ${OBSTACLES_TO_PHASE2}`, 16, 64);
+  }
+  // Touch hint (only on touch devices, fades after 3 seconds of gameplay)
+  if (frameCount > 0 && frameCount < 180 && ('ontouchstart' in window)) {
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, H - 36, W, 36);
+    ctx.fillStyle = '#6a9aee'; ctx.font = '12px Georgia'; ctx.textAlign = 'center';
+    ctx.fillText('Tap left / right  •  or swipe to steer', W / 2, H - 14);
   }
   ctx.restore();
 }

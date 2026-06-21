@@ -34,9 +34,34 @@
     #dlgDualText { flex:1; font-size:0.9rem; line-height:1.55; color:#eee; align-self:center; }
     .dlg-hint { font-size:0.68rem; color:#445; text-align:right; }
   @keyframes blink-prompt{0%,100%{opacity:1;}50%{opacity:0;}}
+
+  #mobile-overlay{
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:#060d1f; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; padding:32px 24px; gap:20px;
+  }
+  @media (max-width:767px),(pointer:coarse){
+    #mobile-overlay{ display:flex; }
+  }
+  #mobile-overlay .mo-icon{ font-size:2.6rem; }
+  #mobile-overlay .mo-title{ font-size:1.2rem; letter-spacing:4px; color:#f0d890; font-family:Georgia,serif; }
+  #mobile-overlay .mo-msg{ font-size:0.82rem; line-height:1.75; color:#a09060; max-width:320px; }
+  #mobile-overlay .mo-btn{
+    padding:10px 28px; background:transparent; border:1px solid #3a2810;
+    border-radius:5px; color:#c8860a; font-size:0.78rem; cursor:pointer;
+    font-family:Georgia,serif; letter-spacing:2px;
+  }
+  #mobile-overlay .mo-btn:hover{ background:#1a1208; }
   </style>
 </head>
 <body>
+
+<div id="mobile-overlay">
+  <div class="mo-icon">🖥️</div>
+  <div class="mo-title">DESKTOP RECOMMENDED</div>
+  <p class="mo-msg">Chapter 1 uses arrow keys to steer the ship. For the full experience, open on a desktop or laptop. You can still tap the conversation to continue.</p>
+  <button class="mo-btn" onclick="document.getElementById('mobile-overlay').style.display='none'">Continue Anyway</button>
+</div>
 
 <!-- ── Chapter 1 Intro Overlay ── -->
 <div id="ch1-intro" onclick="dismissChIntro()"
@@ -87,7 +112,7 @@ document.addEventListener('keydown',()=>{
         <span class="pname">CAPTAIN</span>
       </div>
     </div>
-    <div class="dlg-hint">SPACE to continue</div>
+    <div class="dlg-hint">SPACE or tap to continue</div>
   </div>
 </div>
 <script src="game.js"></script>

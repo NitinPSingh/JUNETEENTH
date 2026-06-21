@@ -210,6 +210,24 @@
       font-size:0.9rem; letter-spacing:1px;
     }
 
+    #mobile-overlay{
+      display:none; position:fixed; inset:0; z-index:9999;
+      background:#0a0a0a; flex-direction:column; align-items:center;
+      justify-content:center; text-align:center; padding:32px 24px; gap:20px;
+    }
+    @media (max-width:767px),(pointer:coarse){
+      #mobile-overlay{ display:flex; }
+    }
+    #mobile-overlay .mo-icon{ font-size:2.6rem; }
+    #mobile-overlay .mo-title{ font-size:1.2rem; letter-spacing:4px; color:#f0d890; font-family:Georgia,serif; }
+    #mobile-overlay .mo-msg{ font-size:0.82rem; line-height:1.75; color:#a09060; max-width:320px; }
+    #mobile-overlay .mo-btn{
+      padding:10px 28px; background:transparent; border:1px solid #3a2810;
+      border-radius:5px; color:#c8860a; font-size:0.78rem; cursor:pointer;
+      font-family:Georgia,serif; letter-spacing:2px;
+    }
+    #mobile-overlay .mo-btn:hover{ background:#1a1208; }
+
     /* skip button */
     #btn-skip {
       position:fixed; top:12px; right:12px; z-index:500;
@@ -221,6 +239,13 @@
   </style>
 </head>
 <body>
+
+<div id="mobile-overlay">
+  <div class="mo-icon">🖥️</div>
+  <div class="mo-title">DESKTOP RECOMMENDED</div>
+  <p class="mo-msg">This interactive story is best experienced on a desktop or laptop computer.</p>
+  <button class="mo-btn" onclick="document.getElementById('mobile-overlay').style.display='none'">Continue Anyway</button>
+</div>
 
 <button id="btn-skip" onclick="window.location.href='../chapter3/index.html'">Skip Chapter ›</button>
 
